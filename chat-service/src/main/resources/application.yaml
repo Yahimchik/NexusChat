@@ -1,0 +1,34 @@
+server:
+  port: 8090
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/chat_db
+    username: chat_user
+    password: chat_password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/chat_service
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: chat-group
+    producer:
+      retries: 3
+
+  application:
+    security:
+      jwt:
+        secret:
+          access: vJAJGzMCvBxRLrHx6ufd3aPQj1SZhs8x0cROA+WzI9GUIRr2h4FN/yNUsdYTyZH1ijZzY4QlS/wZI2NFKZy4/g==

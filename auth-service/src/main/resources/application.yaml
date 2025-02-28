@@ -1,0 +1,27 @@
+spring:
+  datasource:
+#    url: jdbc:postgresql://localhost:5432/auth_service_db
+    url: jdbc:postgresql://host.docker.internal:5432/auth_service_db
+    username: postgres
+    password: 1006
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  application:
+    security:
+      jwt:
+        secret:
+          access: vJAJGzMCvBxRLrHx6ufd3aPQj1SZhs8x0cROA+WzI9GUIRr2h4FN/yNUsdYTyZH1ijZzY4QlS/wZI2NFKZy4/g==
+          refresh: CwwKUIjCmDEau9dyEyjEsDjo17at5BRxCOLrbrDufcV8LxfTLn6Bwxf/99QHMuPyYn4FjKIHu84jhmnj8YcBxQ==
+
+
+server:
+  port: 9090
