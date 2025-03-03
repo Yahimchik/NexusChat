@@ -96,5 +96,5 @@ java -jar target/nexuschat.jar
 
 ## 📬 Контакты
 **Email:** egor.yaximovich@gmail.com  
-**Telegram:** @yahim_yahim
+**Telegram:** t.me/yahim_yahim
 
