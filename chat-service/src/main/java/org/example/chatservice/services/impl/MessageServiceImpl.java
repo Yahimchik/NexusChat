@@ -5,6 +5,7 @@ import org.bson.types.ObjectId;
 import org.example.chatservice.dto.message.MessageRequestDto;
 import org.example.chatservice.dto.message.MessageResponseDto;
 import org.example.chatservice.entities.Message;
+import org.example.chatservice.kafka.MessageKafkaProducer;
 import org.example.chatservice.mapper.MessageMapper;
 import org.example.chatservice.repository.MessageRepository;
 import org.example.chatservice.security.adapter.SecurityContextAdapter;
@@ -24,7 +25,7 @@ public class MessageServiceImpl implements MessageService {
     private final MessageRepository messageRepository;
     private final MessageMapper messageMapper;
     private final SecurityContextAdapter securityContextAdapter;
-
+    private final MessageKafkaProducer kafkaProducer;
 
     @Override
     @Transactional
@@ -32,13 +33,20 @@ public class MessageServiceImpl implements MessageService {
         Message message = messageMapper.messageRequestToMessage(messageRequestDto);
         message.setSenderId(String.valueOf(securityContextAdapter.getCurrentUserId()));
         message = messageRepository.save(message);
+        kafkaProducer.sendMessage(messageMapper.messageToMessageResponseDto(message));
         return messageMapper.messageToMessageResponseDto(message);
     }
 
     @Override
-    public MessageResponseDto markAsRead(UUID messageId) {
+    public MessageResponseDto markAsRead(ObjectId messageId) {
 
-        return null;
+        Message message = messageRepository.findMessageById(messageId)
+                .orElseThrow(() -> new NoSuchElementException("No such message"));
+
+        message.setRead(true);
+        message = messageRepository.save(message);
+
+        return messageMapper.messageToMessageResponseDto(message);
     }
 
     @Override
@@ -47,7 +55,7 @@ public class MessageServiceImpl implements MessageService {
         Message message = messageRepository.findById(messageId)
                 .orElseThrow(() -> new NoSuchElementException("Message not found"));
 
-        if (!isCurrentUser(UUID.fromString(message.getSenderId()))) {
+        if (isCurrentUser(UUID.fromString(message.getSenderId()))) {
             throw new IllegalArgumentException("You are not authorized to make this message");
         }
 
@@ -58,8 +66,20 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageResponseDto editMessage(UUID messageId, String newText) {
-        return null;
+    public MessageResponseDto editMessage(ObjectId messageId, String newText) {
+
+        Message message = messageRepository.findMessageById(messageId)
+                .orElseThrow(() -> new NoSuchElementException("Message not found"));
+
+        if (isCurrentUser(UUID.fromString(message.getSenderId()))) {
+            throw new IllegalArgumentException("You are not authorized to make this message");
+        }
+
+        message.setText(newText);
+        message.setEdited(true);
+        message = messageRepository.save(message);
+
+        return messageMapper.messageToMessageResponseDto(message);
     }
 
     @Override
@@ -71,7 +91,16 @@ public class MessageServiceImpl implements MessageService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<MessageResponseDto> findByText(String text) {
+
+        List<Message> messages = messageRepository.findByTextContainingIgnoreCase(text);
+        return messages.stream()
+                .map(messageMapper::messageToMessageResponseDto)
+                .collect(Collectors.toList());
+    }
+
     private boolean isCurrentUser(UUID senderId) {
-        return securityContextAdapter.getCurrentUserId().equals(senderId);
+        return !securityContextAdapter.getCurrentUserId().equals(senderId);
     }
 }

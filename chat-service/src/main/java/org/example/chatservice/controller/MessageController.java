@@ -42,4 +42,25 @@ public class MessageController {
         List<MessageResponseDto> messages = messageService.getAllMessages(chatId);
         return ResponseEntity.status(HttpStatus.OK).body(messages);
     }
+
+    @PatchMapping("/{messageId}")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<Void> editMessage(@PathVariable @Valid String messageId, @RequestParam @Valid String newText) {
+        ObjectId objectId = new ObjectId(messageId);
+        messageService.editMessage(objectId, newText);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PatchMapping("/isRead/{messageId}")
+    public ResponseEntity<Void> isRead(@PathVariable @Valid String messageId) {
+        ObjectId objectId = new ObjectId(messageId);
+        messageService.markAsRead(objectId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<List<MessageResponseDto>> findByText(@RequestParam String text) {
+        return ResponseEntity.status(HttpStatus.OK).body(messageService.findByText(text));
+    }
 }
