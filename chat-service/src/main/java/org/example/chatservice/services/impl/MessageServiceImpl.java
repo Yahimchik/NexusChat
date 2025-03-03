@@ -5,16 +5,13 @@ import org.bson.types.ObjectId;
 import org.example.chatservice.dto.message.MessageRequestDto;
 import org.example.chatservice.dto.message.MessageResponseDto;
 import org.example.chatservice.entities.Message;
-import org.example.chatservice.kafka.MessageKafkaProducer;
 import org.example.chatservice.mapper.MessageMapper;
-import org.example.chatservice.repository.MessageRepository;
 import org.example.chatservice.security.adapter.SecurityContextAdapter;
 import org.example.chatservice.services.MessageService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -22,29 +19,28 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
 
-    private final MessageRepository messageRepository;
-    private final MessageMapper messageMapper;
     private final SecurityContextAdapter securityContextAdapter;
-    private final MessageKafkaProducer kafkaProducer;
+    private final MessageStorageService messageStorageService;
+    private final MessageEventService eventService;
+    private final MessageMapper messageMapper;
 
     @Override
     @Transactional
     public MessageResponseDto sendMessage(MessageRequestDto messageRequestDto) {
         Message message = messageMapper.messageRequestToMessage(messageRequestDto);
         message.setSenderId(String.valueOf(securityContextAdapter.getCurrentUserId()));
-        message = messageRepository.save(message);
-        kafkaProducer.sendMessage(messageMapper.messageToMessageResponseDto(message));
+        message = messageStorageService.saveMessage(message);
+        eventService.sendMessageEvent(messageMapper.messageToMessageResponseDto(message));
         return messageMapper.messageToMessageResponseDto(message);
     }
 
     @Override
     public MessageResponseDto markAsRead(ObjectId messageId) {
 
-        Message message = messageRepository.findMessageById(messageId)
-                .orElseThrow(() -> new NoSuchElementException("No such message"));
+        Message message = messageStorageService.findMessageById(messageId);
 
         message.setRead(true);
-        message = messageRepository.save(message);
+        message = messageStorageService.saveMessage(message);
 
         return messageMapper.messageToMessageResponseDto(message);
     }
@@ -52,15 +48,14 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public MessageResponseDto deleteMessage(ObjectId messageId) {
 
-        Message message = messageRepository.findById(messageId)
-                .orElseThrow(() -> new NoSuchElementException("Message not found"));
+        Message message = messageStorageService.findMessageById(messageId);
 
         if (isCurrentUser(UUID.fromString(message.getSenderId()))) {
             throw new IllegalArgumentException("You are not authorized to make this message");
         }
 
         message.setDeleted(true);
-        message = messageRepository.save(message);
+        message = messageStorageService.saveMessage(message);
 
         return messageMapper.messageToMessageResponseDto(message);
     }
@@ -68,8 +63,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public MessageResponseDto editMessage(ObjectId messageId, String newText) {
 
-        Message message = messageRepository.findMessageById(messageId)
-                .orElseThrow(() -> new NoSuchElementException("Message not found"));
+        Message message = messageStorageService.findMessageById(messageId);
 
         if (isCurrentUser(UUID.fromString(message.getSenderId()))) {
             throw new IllegalArgumentException("You are not authorized to make this message");
@@ -77,14 +71,14 @@ public class MessageServiceImpl implements MessageService {
 
         message.setText(newText);
         message.setEdited(true);
-        message = messageRepository.save(message);
+        message = messageStorageService.saveMessage(message);
 
         return messageMapper.messageToMessageResponseDto(message);
     }
 
     @Override
     public List<MessageResponseDto> getAllMessages(UUID chatId) {
-        List<Message> messages = messageRepository.findByChatId(String.valueOf(chatId));
+        List<Message> messages = messageStorageService.findMessageByChatId(chatId);
 
         return messages.stream()
                 .map(messageMapper::messageToMessageResponseDto)
@@ -93,8 +87,8 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<MessageResponseDto> findByText(String text) {
+        List<Message> messages = messageStorageService.findMessageByText(text);
 
-        List<Message> messages = messageRepository.findByTextContainingIgnoreCase(text);
         return messages.stream()
                 .map(messageMapper::messageToMessageResponseDto)
                 .collect(Collectors.toList());
