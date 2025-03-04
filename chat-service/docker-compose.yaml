@@ -98,3 +98,11 @@ services:
 
     depends_on:
       - kafka
+
+  service-container:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8090"
+    restart: always

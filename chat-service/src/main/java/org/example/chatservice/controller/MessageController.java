@@ -15,50 +15,50 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/messages")
+@RequestMapping("/api/v1/messages")
 @RequiredArgsConstructor
 public class MessageController {
 
     private final MessageService messageService;
 
-    @PostMapping
+    @PostMapping("/send")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<MessageResponseDto> createMessage(@RequestBody @Valid MessageRequestDto requestDto) {
         MessageResponseDto responseDto = messageService.sendMessage(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
-    @DeleteMapping("/{messageId}")
+    @DeleteMapping
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<MessageResponseDto> deleteMessage(@PathVariable String messageId) {
+    public ResponseEntity<MessageResponseDto> deleteMessage(@RequestParam String messageId) {
         ObjectId objectId = new ObjectId(messageId);
         MessageResponseDto responseDto = messageService.deleteMessage(objectId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseDto);
     }
 
-    @GetMapping("/{chatId}")
+    @GetMapping
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<List<MessageResponseDto>> getMessages(@PathVariable @Valid UUID chatId) {
+    public ResponseEntity<List<MessageResponseDto>> getMessages(@RequestParam @Valid UUID chatId) {
         List<MessageResponseDto> messages = messageService.getAllMessages(chatId);
         return ResponseEntity.status(HttpStatus.OK).body(messages);
     }
 
-    @PatchMapping("/{messageId}")
+    @PatchMapping
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<Void> editMessage(@PathVariable @Valid String messageId, @RequestParam @Valid String newText) {
+    public ResponseEntity<Void> editMessage(@RequestParam @Valid String messageId, @RequestParam @Valid String newText) {
         ObjectId objectId = new ObjectId(messageId);
         messageService.editMessage(objectId, newText);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PatchMapping("/isRead/{messageId}")
-    public ResponseEntity<Void> isRead(@PathVariable @Valid String messageId) {
+    @PatchMapping("/isRead")
+    public ResponseEntity<Void> isRead(@RequestParam @Valid String messageId) {
         ObjectId objectId = new ObjectId(messageId);
         messageService.markAsRead(objectId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping
+    @GetMapping("/search")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<List<MessageResponseDto>> findByText(@RequestParam String text) {
         return ResponseEntity.status(HttpStatus.OK).body(messageService.findByText(text));

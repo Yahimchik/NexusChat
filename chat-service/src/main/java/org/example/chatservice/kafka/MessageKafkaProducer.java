@@ -16,6 +16,6 @@ public class MessageKafkaProducer {
     private final KafkaTemplate<String, MessageResponseDto> kafkaTemplate;
 
     public void sendMessage(MessageResponseDto message) {
-        kafkaTemplate.send("new-messages", message);
+        kafkaTemplate.send("new-messages", message.getChatId(), message);
     }
 }

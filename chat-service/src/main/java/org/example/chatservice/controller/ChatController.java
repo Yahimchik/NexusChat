@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/chats")
+@RequestMapping("/api/v1/chats")
 @RequiredArgsConstructor
 public class ChatController {
 
@@ -25,29 +25,29 @@ public class ChatController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
-    @GetMapping("/{chatId}")
-    public ResponseEntity<ChatResponseDto> getChatById(@PathVariable UUID chatId) {
+    @GetMapping
+    public ResponseEntity<ChatResponseDto> getChatById(@RequestParam UUID chatId) {
         ChatResponseDto responseDto = chatService.getChatById(chatId);
         return ResponseEntity.ok(responseDto);
     }
 
 
-    @DeleteMapping("/{chatId}")
-    public ResponseEntity<Void> deleteChat(@PathVariable UUID chatId) {
+    @DeleteMapping
+    public ResponseEntity<Void> deleteChat(@RequestParam UUID chatId) {
         chatService.deleteChat(chatId);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{chatId}/users")
+    @PostMapping("/users")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<Void> addUserToChat(@PathVariable UUID chatId) {
+    public ResponseEntity<Void> addUserToChat(@RequestParam UUID chatId) {
         chatService.addUserToChat(chatId);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{chatId}/users")
+    @DeleteMapping("/users")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<Void> removeUserFromChat(@PathVariable UUID chatId) {
+    public ResponseEntity<Void> removeUserFromChat(@RequestParam UUID chatId) {
         chatService.removeUserFromChat(chatId);
         return ResponseEntity.ok().build();
     }

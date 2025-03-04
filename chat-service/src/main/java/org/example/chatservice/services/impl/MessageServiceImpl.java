@@ -6,8 +6,10 @@ import org.example.chatservice.dto.message.MessageRequestDto;
 import org.example.chatservice.dto.message.MessageResponseDto;
 import org.example.chatservice.entities.Message;
 import org.example.chatservice.mapper.MessageMapper;
+import org.example.chatservice.repository.MessageRepository;
 import org.example.chatservice.security.adapter.SecurityContextAdapter;
 import org.example.chatservice.services.MessageService;
+import org.example.chatservice.webSockets.WebSocketSessionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
 
+    private final WebSocketSessionManager webSocketSessionManager;
     private final SecurityContextAdapter securityContextAdapter;
     private final MessageStorageService messageStorageService;
     private final MessageEventService eventService;
