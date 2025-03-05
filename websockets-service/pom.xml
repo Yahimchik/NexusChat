@@ -107,6 +107,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>common-dto</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>

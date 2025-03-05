@@ -1,4 +1,4 @@
-//package org.example.chatservice.dto.message;
+//package org.example.websocketsservice.dto;
 //
 //import com.fasterxml.jackson.annotation.JsonTypeInfo;
 //import lombok.AllArgsConstructor;
@@ -10,7 +10,6 @@
 //@AllArgsConstructor
 //@NoArgsConstructor
 //@Builder
-//@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 //public class MessageRequestDto {
 //    private String chatId;
 //    private String text;
@@ -20,3 +19,4 @@
 //    private boolean isEdited = false;
 //    private long timestamp;
 //}
+//

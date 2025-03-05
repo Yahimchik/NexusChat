@@ -19,7 +19,7 @@ public class SwaggerConfiguration {
     public OpenAPI getOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Social Network API")
+                        .title("chat-service")
                         .version("1.0"));
     }
 }

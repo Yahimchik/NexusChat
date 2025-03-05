@@ -1,8 +1,8 @@
 package org.example.chatservice.mapper;
 
-import org.example.chatservice.dto.message.MessageRequestDto;
 import org.example.chatservice.dto.message.MessageResponseDto;
 import org.example.chatservice.entities.Message;
+import org.example.dto.MessageRequestDto;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

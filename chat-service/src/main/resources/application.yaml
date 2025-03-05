@@ -3,8 +3,8 @@ server:
 
 spring:
   datasource:
-#    url: jdbc:postgresql://localhost:5433/chat_db
-    url: jdbc:postgresql://host.docker.internal:5433/chat_db
+    url: jdbc:postgresql://localhost:5433/chat_db
+#    url: jdbc:postgresql://host.docker.internal:5433/chat_db
     username: chat_user
     password: chat_password
     driver-class-name: org.postgresql.Driver
@@ -19,11 +19,12 @@ spring:
 
   data:
     mongodb:
-#      uri: mongodb://localhost:27017/chat_service
-      uri: mongodb://host.docker.internal:27017/chat_service
+      uri: mongodb://localhost:27017/chat_service
+  #      uri: mongodb://host.docker.internal:27017/chat_service
 
   kafka:
-    bootstrap-servers: kafka:9092
+    #    bootstrap-servers: kafka:9092
+    bootstrap-servers: localhost:29092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -31,7 +32,8 @@ spring:
       properties:
         retry.backoff.ms: 500
     consumer:
-      bootstrap-servers: kafka:9092
+      #      bootstrap-servers: kafka:9092
+      bootstrap-servers: localhost:29092
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:

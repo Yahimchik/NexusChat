@@ -4,9 +4,9 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
-import org.example.chatservice.dto.message.MessageRequestDto;
 import org.example.chatservice.dto.message.MessageResponseDto;
 import org.example.chatservice.services.MessageService;
+import org.example.dto.MessageRequestDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +24,7 @@ public class MessageController {
     @PostMapping("/send")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<MessageResponseDto> createMessage(@RequestBody @Valid MessageRequestDto requestDto) {
-        MessageResponseDto responseDto = messageService.sendMessage(requestDto);
+        MessageResponseDto responseDto = messageService.saveMessage(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 

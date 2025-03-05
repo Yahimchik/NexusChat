@@ -16,6 +16,26 @@ public class MessageKafkaProducer {
     private final KafkaTemplate<String, MessageResponseDto> kafkaTemplate;
 
     public void sendMessage(MessageResponseDto message) {
-        kafkaTemplate.send("new-messages", message.getChatId(), message);
+        String chatId = message.getChatId();
+        kafkaTemplate.send("new-messages", chatId, message)
+                .whenComplete((res, ex) -> {
+                    if (ex != null) {
+                        log.error("Ошибка при отправке сообщения в Kafka: " +
+                                        "chatId={}, " +
+                                        "messageId={}, error={}",
+                                chatId, message.getId(), ex.getMessage());
+                    } else {
+                        log.info(
+                                "Сообщение успешно отправлено в Kafka: " +
+                                        "chatId={}," +
+                                        " messageId={}," +
+                                        " partition={}," +
+                                        " offset={}",
+                                chatId,
+                                message.getId(),
+                                res.getRecordMetadata().partition(),
+                                res.getRecordMetadata().offset());
+                    }
+                });
     }
 }

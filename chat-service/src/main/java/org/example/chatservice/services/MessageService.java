@@ -1,15 +1,15 @@
 package org.example.chatservice.services;
 
 import org.bson.types.ObjectId;
-import org.example.chatservice.dto.message.MessageRequestDto;
 import org.example.chatservice.dto.message.MessageResponseDto;
+import org.example.dto.MessageRequestDto;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface MessageService {
 
-    MessageResponseDto sendMessage(MessageRequestDto messageRequestDto);
+    MessageResponseDto saveMessage(MessageRequestDto messageRequestDto);
 
     MessageResponseDto markAsRead(ObjectId messageId);
 
@@ -20,5 +20,6 @@ public interface MessageService {
     List<MessageResponseDto> getAllMessages(UUID chatId);
 
     List<MessageResponseDto> findByText(String text);
+
 
 }

@@ -2,14 +2,12 @@ package org.example.chatservice.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
-import org.example.chatservice.dto.message.MessageRequestDto;
 import org.example.chatservice.dto.message.MessageResponseDto;
 import org.example.chatservice.entities.Message;
 import org.example.chatservice.mapper.MessageMapper;
-import org.example.chatservice.repository.MessageRepository;
 import org.example.chatservice.security.adapter.SecurityContextAdapter;
 import org.example.chatservice.services.MessageService;
-import org.example.chatservice.webSockets.WebSocketSessionManager;
+import org.example.dto.MessageRequestDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +19,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
 
-    private final WebSocketSessionManager webSocketSessionManager;
     private final SecurityContextAdapter securityContextAdapter;
     private final MessageStorageService messageStorageService;
     private final MessageEventService eventService;
@@ -29,7 +26,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     @Transactional
-    public MessageResponseDto sendMessage(MessageRequestDto messageRequestDto) {
+    public MessageResponseDto saveMessage(MessageRequestDto messageRequestDto) {
         Message message = messageMapper.messageRequestToMessage(messageRequestDto);
         message.setSenderId(String.valueOf(securityContextAdapter.getCurrentUserId()));
         message = messageStorageService.saveMessage(message);
