@@ -27,7 +27,7 @@
     let chatId = "";
 
     function connect() {
-        const token = "YOUR_JWT_TOKEN";
+        const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyZTFiZTIxNi0zODRkLTQ1OGUtODQ1Yi0yNGIxYWI4YmEwYTYiLCJyb2xlIjpbIlVTRVIiXSwic3RhdHVzIjoiQUNUSVZFIiwiZXhwIjoxNzQxMTgzMDUwfQ.oM_m-IsTdj4yMGFe5Wpzf4wDohrjGM0wCv8X3jqxXAdTYuLBfPLAcU045QEnQdwpDoBWr8WCK-Inh_Q9ohdWgw";
         const socket = new SockJS(`http://localhost:8080/ws?token=${token}`);
         stompClient = Stomp.over(socket);
 

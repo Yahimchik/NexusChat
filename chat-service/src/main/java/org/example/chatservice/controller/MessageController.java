@@ -21,12 +21,12 @@ public class MessageController {
 
     private final MessageService messageService;
 
-    @PostMapping("/send")
-    @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<MessageResponseDto> createMessage(@RequestBody @Valid MessageRequestDto requestDto) {
-        MessageResponseDto responseDto = messageService.saveMessage(requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
-    }
+//    @PostMapping("/send")
+//    @SecurityRequirement(name = "Bearer Authentication")
+//    public ResponseEntity<MessageResponseDto> createMessage(@RequestBody @Valid MessageRequestDto requestDto) {
+//        MessageResponseDto responseDto = messageService.saveMessage(requestDto);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+//    }
 
     @DeleteMapping
     @SecurityRequirement(name = "Bearer Authentication")

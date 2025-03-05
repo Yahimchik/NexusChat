@@ -26,9 +26,10 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     @Transactional
-    public MessageResponseDto saveMessage(MessageRequestDto messageRequestDto) {
+    public MessageResponseDto saveMessage(MessageRequestDto messageRequestDto, String userid) {
         Message message = messageMapper.messageRequestToMessage(messageRequestDto);
-        message.setSenderId(String.valueOf(securityContextAdapter.getCurrentUserId()));
+//        message.setSenderId(String.valueOf(securityContextAdapter.getCurrentUserId()));
+        message.setSenderId(userid);
         message = messageStorageService.saveMessage(message);
         eventService.sendMessageEvent(messageMapper.messageToMessageResponseDto(message));
         return messageMapper.messageToMessageResponseDto(message);

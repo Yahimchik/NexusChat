@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface MessageService {
 
-    MessageResponseDto saveMessage(MessageRequestDto messageRequestDto);
+    MessageResponseDto saveMessage(MessageRequestDto messageRequestDto, String userId);
 
     MessageResponseDto markAsRead(ObjectId messageId);
 

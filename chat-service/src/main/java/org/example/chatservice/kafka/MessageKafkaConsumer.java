@@ -6,6 +6,9 @@ import org.example.chatservice.dto.message.MessageResponseDto;
 import org.example.chatservice.services.MessageService;
 import org.example.dto.MessageRequestDto;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Headers;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,12 +19,15 @@ public class MessageKafkaConsumer {
     private final MessageService messageService;
 
     @KafkaListener(topics = "new-messages", groupId = "chat-service-group")
-    public void consumeMessage(MessageRequestDto messageRequestDto) {
+    public void consumeMessage(@Payload MessageRequestDto messageRequestDto,
+                               @Header("userId") String userId) {
         log.info("Получено сообщение из Kafka: " +
-                        "chatId={}, ",
-                messageRequestDto.getChatId());
+                        "chatId={}, " +
+                        "userId={} ",
+                messageRequestDto.getChatId(),
+                userId);
 
-        MessageResponseDto message = messageService.saveMessage(messageRequestDto);
+        MessageResponseDto message = messageService.saveMessage(messageRequestDto, userId);
 
         try {
             log.info("Сообщение обработано и сохранено: " +
@@ -39,29 +45,4 @@ public class MessageKafkaConsumer {
                     e.getMessage());
         }
     }
-
-//    @KafkaListener(topics = "new-messages", groupId = "chat-service-group")
-//    public void consumeMessage(MessageResponseDto messageResponseDto) {
-//        log.info("Получено сообщение из Kafka: " +
-//                        "chatId={}, ",
-//                messageResponseDto.getChatId());
-//
-//
-//        try {
-//            log.info("Сообщение обработано и сохранено: " +
-//                            "chatId={}, " +
-//                            "messageId={}",
-//                    messageResponseDto.getChatId(),
-//                    messageResponseDto.getId());
-//        } catch (Exception e) {
-//            log.error("Ошибка при обработке сообщения: " +
-//                            "chatId={}, " +
-//                            "messageId={}, " +
-//                            "error={}",
-//                    messageResponseDto.getChatId(),
-//                    messageResponseDto.getId(),
-//                    e.getMessage());
-//        }
-//
-//    }
 }
