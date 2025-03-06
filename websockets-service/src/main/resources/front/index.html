@@ -3,34 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Test</title>
+    <title>WebSocket Chat</title>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        .chat-container {
+            width: 60%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #messages {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            text-align: left;
+        }
+        .message {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        .message strong {
+            color: #007bff;
+        }
+    </style>
 </head>
 <body>
 
-<h2>WebSocket Chat</h2>
+<div class="chat-container">
+    <h2>WebSocket Chat</h2>
 
-<label for="chatId">Chat ID:</label>
-<input type="text" id="chatId" placeholder="Введите chatId">
-<button onclick="subscribe()">Подписаться</button>
-<br><br>
+    <label for="chatId">Chat ID:</label>
+    <input type="text" id="chatId" placeholder="Введите chatId">
+    <button onclick="subscribe()">Подписаться</button>
+    <br><br>
 
-<label for="message">Message:</label>
-<input type="text" id="message" placeholder="Введите сообщение">
-<button onclick="sendMessage()">Отправить</button>
+    <label for="message">Message:</label>
+    <input type="text" id="message" placeholder="Введите сообщение">
+    <button onclick="sendMessage()">Отправить</button>
 
-<h3>Сообщения:</h3>
-<div id="messages"></div>
+    <h3>Сообщения:</h3>
+    <div id="messages"></div>
+</div>
 
 <script>
     let stompClient = null;
     let chatId = "";
 
-    let isProcessingMessage = false;  // Флаг для проверки обработки сообщения
-
     function connect() {
-        const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyZTFiZTIxNi0zODRkLTQ1OGUtODQ1Yi0yNGIxYWI4YmEwYTYiLCJyb2xlIjpbIlVTRVIiXSwic3RhdHVzIjoiQUNUSVZFIiwiZXhwIjoxNzQxMjQ2NzU0fQ.hl7qIch4g-PKPVTdLIc22md71pKem7WnXzPWE9z7qGucQUR5BHgKfS-TOdfHyHfaA2WEFBmLEj0Y3_JjJWTxFA";
+        const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjZTRiY2UyZi04NTMwLTRkNzMtOGJiMC0zZDI2NmEzNzVkMzIiLCJyb2xlIjpbIlVTRVIiXSwic3RhdHVzIjoiQUNUSVZFIiwiZXhwIjoxNzQxMjUxNDkwfQ.y0vQ3v5MrvnihNjJm0eZpbohN_9MYNmyu6tyEqunY5njann6-dnLUrhVkXGiPNPocx9FVdPgsuWXFuuYpTxsuw";
         const socket = new SockJS(`http://localhost:8080/ws?token=${token}`);
         stompClient = Stomp.over(socket);
 
@@ -110,12 +160,14 @@
         const messagesDiv = document.getElementById("messages");
 
         // Создаем элемент для сообщения
-        const messageElement = document.createElement("p");
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message");
+
         messageElement.innerHTML = `
-        <strong>Отправитель:</strong> ${message.senderId} <br>
-        <strong>Сообщение:</strong> ${message.text} <br>
-        <strong>Время:</strong> ${new Date(message.timestamp).toLocaleString()}
-    `;
+            <strong>Отправитель:</strong> ${message.senderId} <br>
+            <strong>Сообщение:</strong> ${message.text} <br>
+            <strong>Время:</strong> ${new Date(message.timestamp).toLocaleString()}
+        `;
 
         messagesDiv.appendChild(messageElement);
     }
