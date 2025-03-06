@@ -1,0 +1,15 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.value.default.type: org.example.websocketsservice.dto.MessageRequestDto
+        spring.json.trusted.packages: "*"
+
+  application:
+    security:
+      jwt:
+        secret:
+          access: vJAJGzMCvBxRLrHx6ufd3aPQj1SZhs8x0cROA+WzI9GUIRr2h4FN/yNUsdYTyZH1ijZzY4QlS/wZI2NFKZy4/g==

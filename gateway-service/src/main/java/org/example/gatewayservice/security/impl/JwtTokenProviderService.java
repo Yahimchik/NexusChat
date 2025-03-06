@@ -108,6 +108,4 @@ public class JwtTokenProviderService implements JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
     }
-
-
 }

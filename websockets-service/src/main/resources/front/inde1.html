@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+</head>
+<body>
+
+<h2>WebSocket Chat</h2>
+
+<label for="chatId">Chat ID:</label>
+<input type="text" id="chatId" placeholder="Введите chatId">
+<button onclick="subscribe()">Подписаться</button>
+<br><br>
+
+<label for="message">Message:</label>
+<input type="text" id="message" placeholder="Введите сообщение">
+<button onclick="sendMessage()">Отправить</button>
+
+<h3>Сообщения:</h3>
+<div id="messages"></div>
+
+<script>
+    let stompClient = null;
+    let chatId = "";
+
+    let isProcessingMessage = false;  // Флаг для проверки обработки сообщения
+
+    function connect() {
+        const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjZTRiY2UyZi04NTMwLTRkNzMtOGJiMC0zZDI2NmEzNzVkMzIiLCJyb2xlIjpbIlVTRVIiXSwic3RhdHVzIjoiQUNUSVZFIiwiZXhwIjoxNzQxMjQ2NzA4fQ.mzFcGC28mwNi3Qxrec_lVfeiTzZ1rK4FqHOgImpbt32Mr4Jx4m-M9x4BOybgsq6wg05h-9q2mKPNR8nY883tGw";
+        const socket = new SockJS(`http://localhost:8080/ws?token=${token}`);
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect(
+            {Authorization: `Bearer ${token}`},
+            function (frame) {
+                console.log("✅ WebSocket подключен: " + frame);
+            },
+            function (error) {
+                console.error("❌ Ошибка подключения: ", error);
+            }
+        );
+    }
+
+    function subscribe() {
+        let newChatId = document.getElementById("chatId").value.trim();
+
+        if (!newChatId) {
+            alert("Введите chatId перед подпиской!");
+            return;
+        }
+
+        if (chatId === newChatId) {
+            console.log("📌 Уже подписаны на этот чат: " + chatId);
+            return;
+        }
+
+        chatId = newChatId;
+        subscribeToChat(chatId);
+    }
+
+    function subscribeToChat(chatId) {
+        console.log("📢 Подписка на чат: " + chatId);
+        isProcessingMessage = true;
+        stompClient.subscribe("/topic/messages/" + chatId, function (message) {
+            if (isProcessingMessage) {
+                isProcessingMessage = false;
+
+            } else {  // Если сообщение уже обрабатывается, то пропустить
+                console.log("📩 Получено сообщение:", message.body);
+                isProcessingMessage = true;  // Устанавливаем флаг, что сообщение в процессе
+                showMessage(JSON.parse(message.body));
+            } // Сбрасываем флаг после обработки
+        });
+    }
+
+    function sendMessage() {
+        if (!stompClient || !stompClient.connected) {
+            alert("WebSocket не подключен!");
+            return;
+        }
+
+        let text = document.getElementById("message").value.trim();
+        if (!chatId) {
+            alert("Введите chatId перед отправкой сообщения!");
+            return;
+        }
+        if (!text) {
+            alert("Введите текст сообщения!");
+            return;
+        }
+
+        const messageObj = {
+            chatId: chatId,
+            text: text,
+            isRead: false,
+            isDeleted: false,
+            isEdited: false,
+            timestamp: new Date().getTime()
+        };
+
+        stompClient.send("/app/send/" + chatId, {}, JSON.stringify(messageObj));
+        console.log("📤 Сообщение отправлено:", messageObj);
+    }
+
+    function showMessage(message) {
+        const messagesDiv = document.getElementById("messages");
+
+        // Создаем элемент для сообщения
+        const messageElement = document.createElement("p");
+        messageElement.innerHTML = `
+        <strong>Отправитель:</strong> ${message.senderId} <br>
+        <strong>Сообщение:</strong> ${message.text} <br>
+        <strong>Время:</strong> ${new Date(message.timestamp).toLocaleString()}
+    `;
+
+        messagesDiv.appendChild(messageElement);
+    }
+
+    window.onload = function () {
+        connect();
+    };
+</script>
+
+</body>
+</html>

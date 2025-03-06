@@ -7,12 +7,15 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @Configuration
 public class SecurityConfiguration {
+
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http.csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(
                                 "/api/v1/auth/**",
+                                "/api/v1/chats/**",
+                                "/api/v1/messages/**",
                                 "/api/v1/users/**")
                         .permitAll()
                         .anyExchange()

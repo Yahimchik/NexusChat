@@ -1,0 +1,23 @@
+package org.example.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class MessageResponseDto {
+    private Object id;
+    private String chatId;
+    private String senderId;
+    private String text;
+
+    private boolean isRead;
+    private boolean isDeleted;
+    private boolean isEdited;
+    private long timestamp;
+    private long lastModified;
+}
