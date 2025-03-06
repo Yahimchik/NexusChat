@@ -17,7 +17,7 @@ public class MessageKafkaProducer {
 
     public void sendMessage(MessageResponseDto message) {
         String chatId = message.getChatId();
-        kafkaTemplate.send("new-messages", chatId, message)
+        kafkaTemplate.send("message-updates", chatId, message)
                 .whenComplete((res, ex) -> {
                     if (ex != null) {
                         log.error("Ошибка при отправке сообщения в Kafka: " +

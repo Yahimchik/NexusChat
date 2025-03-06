@@ -30,7 +30,7 @@
     let isProcessingMessage = false;  // Флаг для проверки обработки сообщения
 
     function connect() {
-        const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyZTFiZTIxNi0zODRkLTQ1OGUtODQ1Yi0yNGIxYWI4YmEwYTYiLCJyb2xlIjpbIlVTRVIiXSwic3RhdHVzIjoiQUNUSVZFIiwiZXhwIjoxNzQxMjQ2NzU0fQ.hl7qIch4g-PKPVTdLIc22md71pKem7WnXzPWE9z7qGucQUR5BHgKfS-TOdfHyHfaA2WEFBmLEj0Y3_JjJWTxFA";
+        const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjZTRiY2UyZi04NTMwLTRkNzMtOGJiMC0zZDI2NmEzNzVkMzIiLCJyb2xlIjpbIlVTRVIiXSwic3RhdHVzIjoiQUNUSVZFIiwiZXhwIjoxNzQxMjQ2NzA4fQ.mzFcGC28mwNi3Qxrec_lVfeiTzZ1rK4FqHOgImpbt32Mr4Jx4m-M9x4BOybgsq6wg05h-9q2mKPNR8nY883tGw";
         const socket = new SockJS(`http://localhost:8080/ws?token=${token}`);
         stompClient = Stomp.over(socket);
 
