@@ -38,7 +38,6 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
                 // Устанавливаем Principal в STOMP сессию
                 accessor.setUser(() -> userId);
                 accessor.getSessionAttributes().put("userId", userId);
-                ;
             } else {
                 log.warn("WebSocket подключение без валидного токена");
                 return null; // Блокируем соединение
